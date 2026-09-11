@@ -1,0 +1,61 @@
+experiment:
+    project: "star"
+    name: "star_l"
+    generator_checkpoint: "oddqueue/STAR-L"
+    output_dir: "experiments/star_l"
+    save_every: 25_000
+    generate_every: 5_000
+    log_every: 1
+    log_grad_norm_every: 1_000
+    resume: True
+
+model:
+    vq_model:
+        codebook_size: 1024
+        tokenizer_checkpoint: "maskgit-vqgan-imagenet-f16-256.bin"
+
+    generator:
+        hidden_size: 1024
+        num_hidden_layers: 24
+        num_attention_heads: 16
+        intermediate_size: 4096
+        dropout: 0.1
+        attn_drop: 0.1
+        class_label_dropout: 0.1
+        token_grid_shape: [16, 16]
+        condition_num_classes: 1000
+
+        # sampling hyper-params for STAR-L
+        temperature: 0.98
+        guidance_scale: 14.5
+        guidance_scale_power: 2.55
+        use_gradient_checkpointing: False  # True to save memory
+
+dataset:
+    params:
+        # use pretokenized dataset for speed-up
+        pretokenized_jsonl: "maskgitvq.jsonl"
+        num_dataloader_workers: 0
+
+optimizer:
+    params:
+        learning_rate: 4e-4
+        beta1: 0.9
+        beta2: 0.96
+        weight_decay: 0.03
+
+
+lr_scheduler:
+    params:
+        warmup_steps: 62_500
+        end_lr: 1e-5
+
+training:
+    gradient_accumulation_steps: 4
+    per_process_batch_size: 32
+    mixed_precision: "bf16"
+    enable_tf32: True
+    enable_wandb: True
+    seed: 42
+    max_train_steps: 250_000
+    max_grad_norm: 1.0

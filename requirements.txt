@@ -1,0 +1,13 @@
+torch>=2.0.0
+torchvision
+omegaconf
+timm
+numpy
+pillow
+accelerate>=1.1.0
+huggingface-hub
+tqdm
+einops
+wandb
+torchinfo
+termcolor
